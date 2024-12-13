@@ -224,6 +224,7 @@ const  renderAllProducts = () => {
           changeCategory={changeCategory}
           changeRating={changeRating}
           clearFilters={clearFilters}
+          getProducts={getProducts}
         />
         {renderAllProducts()}
       </div>
