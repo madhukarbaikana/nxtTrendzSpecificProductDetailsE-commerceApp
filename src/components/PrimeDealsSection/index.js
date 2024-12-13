@@ -1,6 +1,6 @@
-import {Component} from 'react'
+import {useEffect, useState} from 'react'
 import Cookies from 'js-cookie'
-import {TailSpin} from 'react-loader-spinner'
+import {ThreeDots} from 'react-loader-spinner'
 
 import ProductCard from '../ProductCard'
 import './index.css'
@@ -12,20 +12,17 @@ const apiStatusConstants = {
   inProgress: 'IN_PROGRESS',
 }
 
-class PrimeDealsSection extends Component {
-  state = {
-    primeDeals: [],
-    apiStatus: apiStatusConstants.initial,
-  }
+const PrimeDealsSection =()=> {
+    const [primeDeals,setPrimeDeals]=useState([])
+    const [apiStatus,setApiStatus]=useState(apiStatusConstants.initial)
 
-  componentDidMount() {
-    this.getPrimeDeals()
-  }
+ useEffect(()=>{
+  getPrimeDeals()
+ },[])
 
-  getPrimeDeals = async () => {
-    this.setState({
-      apiStatus: apiStatusConstants.inProgress,
-    })
+ const  getPrimeDeals = async () => {
+
+  setApiStatus(apiStatusConstants.inProgress)
 
     const jwtToken = Cookies.get('jwt_token')
 
@@ -47,22 +44,16 @@ class PrimeDealsSection extends Component {
         imageUrl: product.image_url,
         rating: product.rating,
       }))
-      this.setState({
-        primeDeals: updatedData,
-        apiStatus: apiStatusConstants.success,
-      })
+
+      setApiStatus(apiStatusConstants.success)
+     setPrimeDeals(updatedData)
     }
     if (response.status === 401) {
-      this.setState({
-        apiStatus: apiStatusConstants.failure,
-      })
+     setApiStatus(apiStatusConstants.failure)
     }
   }
 
-  renderPrimeDealsList = () => {
-    const {primeDeals} = this.state
-    return (
-      <div>
+ const renderPrimeDealsList = () => ( <div>
         <h1 className="primedeals-list-heading">Exclusive Prime Deals</h1>
         <ul className="products-list">
           {primeDeals.map(product => (
@@ -71,9 +62,9 @@ class PrimeDealsSection extends Component {
         </ul>
       </div>
     )
-  }
+  
 
-  renderPrimeDealsFailureView = () => (
+const  renderPrimeDealsFailureView = () => (
     <img
       src="https://assets.ccbp.in/frontend/react-js/exclusive-deals-banner-img.png"
       alt="Register Prime"
@@ -81,25 +72,22 @@ class PrimeDealsSection extends Component {
     />
   )
 
-  renderLoadingView = () => (
+ const renderLoadingView = () => (
     <div className="primedeals-loader-container">
-      <TailSpin type="ThreeDots" color="#0b69ff" height="50" width="50" />
+      <ThreeDots  color="#0b69ff" height="80" width="80" />
     </div>
   )
 
-  render() {
-    const {apiStatus} = this.state
     switch (apiStatus) {
       case apiStatusConstants.success:
-        return this.renderPrimeDealsList()
+        return renderPrimeDealsList()
       case apiStatusConstants.failure:
-        return this.renderPrimeDealsFailureView()
+        return renderPrimeDealsFailureView()
       case apiStatusConstants.inProgress:
-        return this.renderLoadingView()
+        return renderLoadingView()
       default:
         return null
     }
-  }
 }
 
 export default PrimeDealsSection
